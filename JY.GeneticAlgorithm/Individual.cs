@@ -11,17 +11,28 @@ namespace  JY.GeneticAlgorithm
         private IList<T> genes;
         private double mutationRate;
         private int crossoverPoint;
-        private Func<double> fitnessFunction;
+        private Func<Individual<IGene>,double> fitnessFunction;
         private double fitness  = 0;
 
-        public double GetFitness()
+        public IList<T> Genes
         {
-            return fitness;
+            get 
+            {
+                return genes;
+            }
+        }
+
+        public double Fitness
+        {
+            get
+            {
+                return fitness;
+            }
         }
 
         public Individual(IList<T> genes, 
                             double mutationRate, 
-                            Func<double> fitnessFunction, 
+                            Func<Individual<IGene>,double> fitnessFunction, 
                             int crossoverPoint = -1)
         {
             if (mutationRate < 0 || mutationRate > 1)

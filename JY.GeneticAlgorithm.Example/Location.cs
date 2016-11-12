@@ -9,9 +9,9 @@ namespace JY.GeneticAlgorithm.Example
         public double XCoordinate { get; set; }
         public double YCoordinate { get; set; }
 
-        private Func<IGene,double> distanceFunction;
+        private Func<Location, Location, double> distanceFunction;
 
-        public Location(double x, double y, Func<IGene,double> distanceFunction)
+        public Location(double x, double y, Func<Location,Location,double> distanceFunction)
         {
             XCoordinate = x;
             YCoordinate = y;
@@ -20,7 +20,17 @@ namespace JY.GeneticAlgorithm.Example
 
         public double DistanceFrom(IGene other) 
         {
-            return distanceFunction(other);
+            return distanceFunction(this, (Location)other);
+        }
+
+        public IGene Clone()
+        {
+            return (IGene)this.MemberwiseClone();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("X : {0}, Y: {1}", XCoordinate, YCoordinate);
         }
     }
 }
