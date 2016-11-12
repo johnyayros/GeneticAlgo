@@ -13,8 +13,8 @@ namespace JY.GeneticAlgorithm.Example
 
         public Location(double x, double y, Func<Location,Location,double> distanceFunction)
         {
-            XCoordinate = x;
-            YCoordinate = y;
+            this.XCoordinate = x;
+            this.YCoordinate = y;
             this.distanceFunction = distanceFunction;
         }
 

@@ -11,7 +11,7 @@ namespace  JY.GeneticAlgorithm
         private IList<T> genes;
         private double mutationRate;
         private int crossoverPoint;
-        private Func<Individual<IGene>,double> fitnessFunction;
+        private Func<Individual<T>,double> fitnessFunction;
         private double fitness  = 0;
 
         public IList<T> Genes
@@ -32,11 +32,14 @@ namespace  JY.GeneticAlgorithm
 
         public Individual(IList<T> genes, 
                             double mutationRate, 
-                            Func<Individual<IGene>,double> fitnessFunction, 
+                            Func<Individual<T>,double> fitnessFunction, 
                             int crossoverPoint = -1)
         {
             if (mutationRate < 0 || mutationRate > 1)
                 throw new ArgumentException("Mutation rate must be between 0 and 1");
+            
+            if (fitnessFunction == null)
+                throw new ArgumentException("Fitness function cannot be null.");
 
             this.genes = genes;
             this.mutationRate = mutationRate;
@@ -50,33 +53,34 @@ namespace  JY.GeneticAlgorithm
         {
             this.genes = other.genes;
             this.mutationRate = other.mutationRate;
+            this.fitnessFunction = other.fitnessFunction;
+            this.crossoverPoint = other.crossoverPoint;
         }
 
-        public Individual<T> Mate(Individual<T> father)
+        internal Individual<T> Mate(Individual<T> father)
         {
             var count = crossoverPoint;
-            var result = new T[genes.Count];
-            genes.CopyTo(result, count);
+            var resultGenes = new T[genes.Count];
+            genes.CopyTo(resultGenes, count);
             
             foreach (var item in father.genes)
             {
-                if (!result.Contains(item))
-                        result[count++] = item;
+                if (!resultGenes.Contains(item))
+                        resultGenes[count++] = item;
             }
 
-            return new Individual<T>(result, 
+
+            var result = new Individual<T>(resultGenes, 
                                     this.mutationRate, 
                                     this.fitnessFunction, 
                                     this.crossoverPoint);
+            
+            result.fitness = result.fitnessFunction(result);
+            result.Mutate();
+            return result;
         }
-
-        void Copy(Individual<T> other)
-        {
-            throw new NotImplementedException();
-        }
-
         
-        void Mutate()
+        internal void Mutate()
         {
             var i = random.NextDouble();
             
@@ -89,6 +93,11 @@ namespace  JY.GeneticAlgorithm
             var gene2 = genes[idx2];
             genes[idx1] = gene2;
             genes[idx2] = gene1;
+        }
+
+        internal void CalcFitness() 
+        {
+            fitness = fitnessFunction(this);
         }
     }
 }

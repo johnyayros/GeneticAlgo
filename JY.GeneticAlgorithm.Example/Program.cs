@@ -13,8 +13,8 @@ namespace JY.GeneticAlgorithm.Example
         {
             var locations = LoadLocations();
 
-            var fitnessFunction = new Func<Individual<IGene>,double>(
-                (Individual<IGene> solution) => {
+            var fitnessFunction = new Func<Individual<Location>,double>(
+                (Individual<Location> solution) => {
                     var total = 0.0;
                     for (var i=1; i<solution.Genes.Count; ++i)
                     {
@@ -31,9 +31,8 @@ namespace JY.GeneticAlgorithm.Example
                                                         .5, 
                                                         true);
 
-            //locations.ForEach(i => Console.WriteLine(i.ToString()));
             var output = new Action<string>(i => Console.WriteLine(i));
-            population.RunGeneticAlgorithm(100, output);
+            var final = population.RunGeneticAlgorithm(100, output);
         }
 
         public static List<Location> LoadLocations()
