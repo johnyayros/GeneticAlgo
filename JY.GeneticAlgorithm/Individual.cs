@@ -61,12 +61,15 @@ namespace  JY.GeneticAlgorithm
         {
             var count = crossoverPoint;
             var resultGenes = new T[genes.Count];
-            genes.CopyTo(resultGenes, count);
+            Array.Copy(genes.ToArray(), resultGenes, count);
             
             foreach (var item in father.genes)
             {
-                if (!resultGenes.Contains(item))
-                        resultGenes[count++] = item;
+                if (!resultGenes.Contains(item)) //todo: verify this is working.
+                {
+                    resultGenes[count] = item;
+                    count++;
+                }
             }
 
 

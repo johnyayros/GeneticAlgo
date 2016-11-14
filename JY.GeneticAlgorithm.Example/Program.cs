@@ -18,8 +18,8 @@ namespace JY.GeneticAlgorithm.Example
                     var total = 0.0;
                     for (var i=1; i<solution.Genes.Count; ++i)
                     {
-                        var prev = solution.Genes[i-i];
-                        total = solution.Genes[i].DistanceFrom(prev);
+                        var prev = solution.Genes[i-1];
+                        total += solution.Genes[i].DistanceFrom(prev);
                     }
                     return total;
                 }
@@ -27,7 +27,7 @@ namespace JY.GeneticAlgorithm.Example
 
             var population = new Population<Location>(locations, 
                                                         fitnessFunction,
-                                                        1000, 
+                                                        50, 
                                                         .5, 
                                                         true);
 

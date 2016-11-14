@@ -66,23 +66,43 @@ namespace  JY.GeneticAlgorithm
         {
             individuals = new List<Individual<T>>();
 
-            //Initialize the population
-            for (var i = 0; i < populationSize; ++i)
+            //Initialize the population with a population that is 1/10th the populationSize
+            var tempPopulation = (int)Math.Floor(populationSize / 10.0); 
+            for (var i = 0; i < tempPopulation; ++i)
             {
                 var copy = initialSolution.Clone();
                 copy.Shuffle();
-                var solution = new Individual<T>(initialSolution,
+                var solution = new Individual<T>(copy,
                                                     mutationRate,
                                                     fitnessFunction,
                                                     crossoverPoint);
                 AddIndividual(solution);
             }
 
-            fittest = individuals[random.Next(0, populationSize-1)];
+            if (output != null)
+            {
+                output(string.Format(
+                    "Starting optimization. Initial population has been seeded with {0} individuals.", 
+                    individuals.Count));
+                
+                individuals.ForEach(t => {
+                    if (fittest == null || t.Fitness < fittest.Fitness)
+                            fittest = t;
+                    
+                    output((string.Format("Fitness = {0}", t.Fitness)));
+                });
+            }
+                    
+
+            fittest = individuals[random.Next(0, tempPopulation-1)];
 
             for (var i = 0; i<maxIterations; ++i)
             {
-                Evolve();
+                if (output != null)
+                    output(string.Format("Starting iteration: {0}", i));
+
+                Evolve(output);
+
                 if (output != null)
                     output(string.Format("Iteration: {0}, Average fitness: {1}, Fittest: {2}", i, avgFitness, fittest.Fitness));
             }
@@ -91,7 +111,7 @@ namespace  JY.GeneticAlgorithm
 
         private static Random random = new Random();
 
-        public void Evolve()
+        public void Evolve(Action<string> output = null)
         {
             var offspring = new List<Individual<T>>();
             Individual<T> mother, father;
@@ -114,7 +134,7 @@ namespace  JY.GeneticAlgorithm
 
             foreach (Individual<T> t in individuals) 
             {
-                if (t.Fitness > avgFitness && individuals.Count > 2) 
+                if ((t.Fitness > avgFitness) && ((individuals.Count - toRemove.Count) > 2)) 
                 {
                     toRemove.Add(t);
                 } 
@@ -128,6 +148,9 @@ namespace  JY.GeneticAlgorithm
             }
 
             toRemove.ForEach(t => RemoveIndividual(t));
+
+            if (output != null)
+                output(string.Format("Completed interation and pruning; {0} items removed.", toRemove.Count));
         }
     }
 }
