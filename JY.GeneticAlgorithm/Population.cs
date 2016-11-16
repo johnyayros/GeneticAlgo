@@ -101,10 +101,13 @@ namespace  JY.GeneticAlgorithm
                 if (output != null)
                     output(string.Format("Starting iteration: {0}", i));
 
+                var pre = fittest.Fitness;
+
                 Evolve(output);
 
                 if (output != null)
-                    output(string.Format("Iteration: {0}, Average fitness: {1}, Fittest: {2}", i, avgFitness, fittest.Fitness));
+                    output(string.Format("Iteration: {0}, Average fitness: {1}, Fittest: {2}, Difference: {3}", 
+                                i, avgFitness, fittest.Fitness, fittest.Fitness - pre));
             }
             return fittest;
         }
@@ -143,6 +146,7 @@ namespace  JY.GeneticAlgorithm
                     if (fittest == null || fittest.Fitness > t.Fitness) 
                     {
                         fittest = new Individual<T>(t);
+                        fittest.CalcFitness();
                     }
                 }
             }

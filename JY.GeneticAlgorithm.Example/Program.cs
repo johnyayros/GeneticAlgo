@@ -21,6 +21,7 @@ namespace JY.GeneticAlgorithm.Example
                         var prev = solution.Genes[i-1];
                         total += solution.Genes[i].DistanceFrom(prev);
                     }
+                    
                     return total;
                 }
             );
@@ -29,7 +30,7 @@ namespace JY.GeneticAlgorithm.Example
                                                         fitnessFunction,
                                                         50, 
                                                         .5, 
-                                                        true);
+                                                        false);
 
             var output = new Action<string>(i => Console.WriteLine(i));
             var final = population.RunGeneticAlgorithm(100, output);
@@ -57,7 +58,8 @@ namespace JY.GeneticAlgorithm.Example
                     break;
 
                 var coords = line.Split(' ');
-                locations.Add(new Location(Double.Parse(coords[1]), 
+                locations.Add(new Location(Int32.Parse(coords[0]),
+                                            Double.Parse(coords[1]), 
                                             Double.Parse(coords[2]), 
                                             distanceFunction));
             }

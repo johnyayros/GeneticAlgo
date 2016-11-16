@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace  JY.GeneticAlgorithm
+namespace JY.GeneticAlgorithm
 {
     public class Individual<T> where T : IGene
     {
@@ -11,12 +11,12 @@ namespace  JY.GeneticAlgorithm
         private IList<T> genes;
         private double mutationRate;
         private int crossoverPoint;
-        private Func<Individual<T>,double> fitnessFunction;
-        private double fitness  = 0;
+        private Func<Individual<T>, double> fitnessFunction;
+        private double fitness = 0;
 
         public IList<T> Genes
         {
-            get 
+            get
             {
                 return genes;
             }
@@ -30,14 +30,14 @@ namespace  JY.GeneticAlgorithm
             }
         }
 
-        public Individual(IList<T> genes, 
-                            double mutationRate, 
-                            Func<Individual<T>,double> fitnessFunction, 
+        public Individual(IList<T> genes,
+                            double mutationRate,
+                            Func<Individual<T>, double> fitnessFunction,
                             int crossoverPoint = -1)
         {
             if (mutationRate < 0 || mutationRate > 1)
                 throw new ArgumentException("Mutation rate must be between 0 and 1");
-            
+
             if (fitnessFunction == null)
                 throw new ArgumentException("Fitness function cannot be null.");
 
@@ -59,37 +59,28 @@ namespace  JY.GeneticAlgorithm
 
         internal Individual<T> Mate(Individual<T> father)
         {
-            var count = crossoverPoint;
-            var resultGenes = new T[genes.Count];
-            Array.Copy(genes.ToArray(), resultGenes, count);
-            
-            foreach (var item in father.genes)
-            {
-                if (!resultGenes.Contains(item)) //todo: verify this is working.
-                {
-                    resultGenes[count] = item;
-                    count++;
-                }
-            }
+            var resultGenes = new List<T>(genes.Count);
+            resultGenes.AddRange(genes.Take(crossoverPoint));
+            var diff = genes.Except(resultGenes.ToArray());
+            resultGenes.AddRange(diff);
 
-
-            var result = new Individual<T>(resultGenes, 
-                                    this.mutationRate, 
-                                    this.fitnessFunction, 
+            var result = new Individual<T>(resultGenes,
+                                    this.mutationRate,
+                                    this.fitnessFunction,
                                     this.crossoverPoint);
-            
+
             result.fitness = result.fitnessFunction(result);
             result.Mutate();
             return result;
         }
-        
+
         internal void Mutate()
         {
             var i = random.NextDouble();
-            
+
             if (i >= mutationRate)
                 return;
-            
+
             var idx1 = random.Next(0, genes.Count - 1);
             var idx2 = random.Next(0, genes.Count - 1);
             var gene1 = genes[idx1];
@@ -98,7 +89,7 @@ namespace  JY.GeneticAlgorithm
             genes[idx2] = gene1;
         }
 
-        internal void CalcFitness() 
+        internal void CalcFitness()
         {
             fitness = fitnessFunction(this);
         }

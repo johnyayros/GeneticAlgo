@@ -1,6 +1,8 @@
+using System;
+
 namespace  JY.GeneticAlgorithm
 {
-    public interface IGene
+    public interface IGene : IEquatable<IGene>
     {
         double DistanceFrom(IGene other);
         IGene Clone();
